@@ -1,0 +1,15 @@
+// Function to capitalize headers in an excel file
+
+function main(workbook: ExcelScript.Workbook) {
+    let selectedSheet = workbook.getActiveWorksheet();
+    let numColumns = selectedSheet.getUsedRange().getColumnCount();
+    let sheetCount = workbook.getWorksheets().length;
+    let newSheetName = "TemporarySheet" + (sheetCount + 1);
+    let sheet2 = workbook.addWorksheet(newSheetName);
+    sheet2.getRange("A1").copyFrom(selectedSheet.getRangeByIndexes(0, 0, 1, numColumns), ExcelScript.RangeCopyType.all, false, false);
+    sheet2.getRange("A2").setFormulaLocal("=UPPER(A1)");
+    sheet2.getRange("A2").autoFill(sheet2.getRangeByIndexes(1, 0, 1, numColumns), ExcelScript.AutoFillType.fillCopy);
+    let filledRange = sheet2.getRangeByIndexes(1, 0, 1, numColumns);
+    selectedSheet.getRangeByIndexes(0, 0, 1, numColumns).setValues(filledRange.getValues());
+    workbook.getWorksheet(sheet2.getName()).delete();
+}
