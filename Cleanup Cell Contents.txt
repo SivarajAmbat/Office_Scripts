@@ -1,0 +1,17 @@
+// Function to remove unwanted double quotes and new line characters in cell values
+
+function main(workbook: ExcelScript.Workbook) {
+    let sheet = workbook.getActiveWorksheet();
+    let range = sheet.getUsedRange();
+    let values = range.getValues();
+
+    for (let row = 0; row < values.length; row++) {
+      for (let col = 0; col < values[row].length; col++) {
+        if (typeof values[row][col] === "string") { 
+          values[row][col] = values[row][col].replace(/"/g, '').replace(/[\n\r]/g, '');
+        }
+      }
+    }
+    range.setValues(values);
+    range.getFormat().setHorizontalAlignment(ExcelScript.HorizontalAlignment.left);
+}
