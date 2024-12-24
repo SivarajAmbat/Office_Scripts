@@ -1,0 +1,24 @@
+/**
+ * This script applies a background color to cells over a certain value.
+ * @param highlightThreshold The value used for comparisons.
+ * @param color A string representing the color to make the high value cells. 
+ *   This must be a color code representing the color of the background, 
+ *   in the form #RRGGBB (e.g., "FFA500") or a named HTML color (e.g., "orange").
+ */
+function main(
+    workbook: ExcelScript.Workbook,
+    highlightThreshold: number,
+    color: string) {
+    // Get the used cells in the current worksheet.
+    const currentSheet = workbook.getActiveWorksheet();
+    const usedRange = currentSheet.getUsedRange();
+
+    const rangeValues = usedRange.getValues();
+    for (let row = 0; row < rangeValues.length; row++) {
+        for (let column = 0; column < rangeValues[row].length; column++) {
+            if (rangeValues[row][column] >= highlightThreshold) {
+                usedRange.getCell(row, column).getFormat().getFill().setColor(color);
+            }
+        }
+    }
+}
