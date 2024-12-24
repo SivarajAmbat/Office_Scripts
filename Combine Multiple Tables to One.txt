@@ -1,0 +1,29 @@
+function main(workbook: ExcelScript.Workbook) {
+  // Delete the "Combined" worksheet, if it's present.
+  workbook.getWorksheet('Combined')?.delete();
+
+  // Create a new worksheet named "Combined" for the combined table.
+  const newSheet = workbook.addWorksheet('Combined');
+  
+  // Get the header values for the first table in the workbook.
+  // This also saves the table list before we add the new, combined table.
+  const tables = workbook.getTables();    
+  const headerValues = tables[0].getHeaderRowRange().getTexts();
+  console.log(headerValues);
+
+  // Copy the headers on a new worksheet to an equal-sized range.
+  const targetRange = newSheet.getRange('A1').getResizedRange(headerValues.length-1, headerValues[0].length-1);
+  targetRange.setValues(headerValues);
+
+  // Add the data from each table in the workbook to the new table.
+  const combinedTable = newSheet.addTable(targetRange.getAddress(), true);
+  for (let table of tables) {      
+    let dataValues = table.getRangeBetweenHeaderAndTotal().getTexts();
+    let rowCount = table.getRowCount();
+
+    // If the table is not empty, add its rows to the combined table.
+    if (rowCount > 0) {
+      combinedTable.addRows(-1, dataValues);
+    }
+  }
+}
